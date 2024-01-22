@@ -23,7 +23,7 @@ on:
 jobs:
   build-test-pack-push:
     runs-on: ubuntu-latest
-    name: Build, Test, Pack, Push
+    name: Build, Test, Pack, Push - ${{ inputs.nuget_source }}
     permissions:
       contents: read
       packages: write
