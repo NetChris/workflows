@@ -3,10 +3,6 @@ name: Pre-Release
 
 on:
   workflow_call:
-    secrets:
-      nuget_org_api_key:
-        description: "The API key for NuGet.org"
-        required: true
 
 jobs:
   enforce_semver:
@@ -44,4 +40,4 @@ jobs:
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
       nuget_source: ${{ vars.NC_NUGET_ORG_API_SOURCE_URL }}
     secrets:
-      nuget_api_key: ${{ secrets.nuget_org_api_key }}
+      nuget_api_key: ${{ secrets.NC_NUGET_ORG_API_KEY }}
