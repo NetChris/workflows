@@ -51,4 +51,4 @@ jobs:
       - name: Pack
         run: dotnet pack --configuration Release /p:PackageVersion=${{ inputs.nuget_version }} /p:Version=${{ inputs.dotnet_assembly_version }} --output ./nupkgs
       - name: Push
-        run: dotnet nuget push ./nupkgs/*.nupkg --source ${{ inputs.nuget_source }} --api-key ${{ env.nuget_api_key == '' }}
+        run: dotnet nuget push ./nupkgs/*.nupkg --source ${{ inputs.nuget_source }} --api-key ${{ env.nuget_api_key }}
