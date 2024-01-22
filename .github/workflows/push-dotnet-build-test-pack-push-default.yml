@@ -1,3 +1,4 @@
+# Intended to be called from a push event
 name: Push
 
 on:
