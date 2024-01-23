@@ -1,0 +1,42 @@
+# Intended to be called from a "released" release event
+name: Release
+
+on:
+  workflow_call:
+
+jobs:
+  enforce_semver:
+    name: Enforce SemVer
+    runs-on: ubuntu-latest
+    outputs:
+      nuget_version: ${{ steps.semver_release.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ steps.semver_release.outputs.dotnet_assembly_version }}
+    steps:
+      - id: semver_release
+        uses: NetChris/semver-release@009feae9d273a9944e89abd386adcc3805b85a78
+  build-test-pack-push-github:
+    name: GitHub NuGet registry
+    needs: enforce_semver
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
+    with:
+      nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
+      # We default to pushing to the organizational feed, so no value for nuget_source
+    secrets:
+      nuget_api_key: ${{ secrets.GITHUB_TOKEN }}
+  build-test-pack-push-nugetorg:
+    name: nuget.org
+    needs: enforce_semver
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
+    with:
+      nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
+      nuget_source: ${{ vars.NC_NUGET_ORG_API_SOURCE_URL }}
+    secrets:
+      nuget_api_key: ${{ secrets.NC_NUGET_ORG_API_KEY }}
