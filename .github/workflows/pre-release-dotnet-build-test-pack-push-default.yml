@@ -1,5 +1,5 @@
-# Intended to be called from a "released" release event
-name: Release
+# Intended to be called from a "prereleased" release event
+name: Pre-Release
 
 on:
   workflow_call:
@@ -9,18 +9,19 @@ jobs:
     name: Enforce SemVer
     runs-on: ubuntu-latest
     outputs:
-      nuget_version: ${{ steps.semver_release.outputs.nuget_version }}
-      dotnet_assembly_version: ${{ steps.semver_release.outputs.dotnet_assembly_version }}
+      nuget_version: ${{ steps.semver_pre_release.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ steps.semver_pre_release.outputs.dotnet_assembly_version }}
     steps:
-      - id: semver_release
-        uses: NetChris/semver-release@009feae9d273a9944e89abd386adcc3805b85a78
+      - id: semver_pre_release
+        # TODO - NetChris/semver-release for release
+        uses: NetChris/semver-pre-release@d4b3def8607e91d29b9f8e1371045689765152e2
   build-test-pack-push-github:
     name: GitHub NuGet registry
     needs: enforce_semver
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/dotnet/build-test-pack-push/defaults.yml
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
     with:
       nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
@@ -33,7 +34,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/dotnet/build-test-pack-push/defaults.yml
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
     with:
       nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
