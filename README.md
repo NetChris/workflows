@@ -25,12 +25,12 @@ jobs:
 
 Note the `permissions` requirement.
 
-## `pre-release-dotnet-build-test-pack-push-default.yml`
+## `pre-release-nuget-org.yml`
 
-This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for pre-release actions, with packages being pushed to the GitHub NuGet registry and NuGet.org:
+This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for **pre-release** actions, with packages being pushed to NuGet.org:
 
 ``` yaml
-name: Pre-Release
+name: Pre-Release - NuGet.org
 
 on:
   release:
@@ -41,19 +41,21 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: NetChris/workflows/.github/workflows/pre-release-dotnet-build-test-pack-push-default.yml@SHA
+    uses: NetChris/workflows/.github/workflows/pre-release-nuget-org.yml@SHA
     secrets: inherit
 ```
 
 - Note the `permissions` requirement
 - Note the `secrets: inherit` requirement
+- Replace `SHA` with the appropriate SHA version of this repository
+- A similar workflow exists, `pre-release-nuget-github.yml`, for the GitHub NuGet registry
 
-## `release-dotnet-build-test-pack-push-default.yml`
+## `release-nuget-org.yml`
 
-This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for release actions, with packages being pushed to the GitHub NuGet registry and NuGet.org:
+This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for **release** actions, with packages being pushed to NuGet.org:
 
 ``` yaml
-name: Release
+name: Release - NuGet.org
 
 on:
   release:
@@ -64,9 +66,11 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: NetChris/workflows/.github/workflows/release-dotnet-build-test-pack-push-default.yml@SHA
+    uses: NetChris/workflows/.github/workflows/release-nuget-org.yml@SHA
     secrets: inherit
 ```
 
 - Note the `permissions` requirement
 - Note the `secrets: inherit` requirement
+- Replace `SHA` with the appropriate SHA version of this repository
+- A similar workflow exists, `release-nuget-github.yml`, for the GitHub NuGet registry
