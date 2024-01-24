@@ -1,0 +1,23 @@
+name: Release - NuGet.org
+
+on:
+  workflow_call:
+
+jobs:
+  enforce_semver:
+    name: Enforce SemVer
+    runs-on: ubuntu-latest
+    outputs:
+      nuget_version: ${{ steps.semver_release.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ steps.semver_release.outputs.dotnet_assembly_version }}
+    steps:
+      - id: semver_release
+        uses: NetChris/semver-release@009feae9d273a9944e89abd386adcc3805b85a78
+  build-test-pack-push-nugetorg:
+    name: nuget.org
+    needs: enforce_semver
+    uses: ./.github/workflows/build-test-pack-push-nuget-org.yml
+    with:
+      nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
+    secrets: inherit
