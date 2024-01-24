@@ -1,0 +1,25 @@
+on:
+  workflow_call:
+    inputs:
+      nuget_version:
+        description: 'NuGet Version for the package'
+        required: true
+        type: string
+      dotnet_assembly_version:
+        description: '.NET Assembly Version'
+        required: true
+        type: string
+
+jobs:
+  build-test-pack-push-github:
+    name: GitHub NuGet registry
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
+    with:
+      nuget_version: ${{ inputs.nuget_version }}
+      dotnet_assembly_version: ${{ inputs.dotnet_assembly_version }}
+      # We default to pushing to the organizational feed, so no value for nuget_source
+    secrets:
+      nuget_api_key: ${{ secrets.GITHUB_TOKEN }}
