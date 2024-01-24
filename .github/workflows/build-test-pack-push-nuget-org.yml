@@ -1,0 +1,28 @@
+# Intended to be called from a "prereleased" release event
+name: Pre-Release
+
+on:
+  workflow_call:
+    inputs:
+      nuget_version:
+        description: 'NuGet Version for the package'
+        required: true
+        type: string
+      dotnet_assembly_version:
+        description: '.NET Assembly Version'
+        required: true
+        type: string
+
+jobs:
+  build_test_pack_push_nugetorg:
+    name: nuget.org
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
+    with:
+      nuget_version: ${{ inputs.nuget_version }}
+      dotnet_assembly_version: ${{ inputs.dotnet_assembly_version }}
+      nuget_source: ${{ vars.NC_NUGET_ORG_API_SOURCE_URL }}
+    secrets:
+      nuget_api_key: ${{ secrets.NC_NUGET_ORG_API_KEY }}

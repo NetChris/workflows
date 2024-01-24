@@ -1,0 +1,23 @@
+# Intended to be called from a "prereleased" release event
+name: Pre-Release - GitHub
+
+on:
+  workflow_call:
+
+jobs:
+  enforce_semver:
+    name: Enforce SemVer
+    runs-on: ubuntu-latest
+    outputs:
+      nuget_version: ${{ steps.semver_pre_release.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ steps.semver_pre_release.outputs.dotnet_assembly_version }}
+    steps:
+      - id: semver_pre_release
+        uses: NetChris/semver-pre-release@d4b3def8607e91d29b9f8e1371045689765152e2
+  build-test-pack-push-github:
+    name: GitHub NuGet registry
+    needs: enforce_semver
+    uses: ./.github/workflows/build-test-pack-push-github.yml
+    with:
+      nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
+      dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
