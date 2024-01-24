@@ -30,6 +30,7 @@ Note the `permissions` requirement.
 This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for **pre-release** actions, with packages being pushed to NuGet.org:
 
 ``` yaml
+# Put this in a "publish-nuget-org-pre-release.yml" file
 name: Pre-Release - NuGet.org
 
 on:
@@ -55,6 +56,7 @@ jobs:
 This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for **release** actions, with packages being pushed to NuGet.org:
 
 ``` yaml
+# Put this in a "publish-nuget-org-release.yml" file
 name: Release - NuGet.org
 
 on:
