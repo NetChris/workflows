@@ -15,6 +15,8 @@ name: Push
 
 on:
   push:
+    branches:    
+      - '**'
     tags-ignore:
       - '**'
 
