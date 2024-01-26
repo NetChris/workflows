@@ -14,7 +14,7 @@ on:
       nuget_source:
         description: 'Package source (URL, UNC/folder path or package source name) to use.'
         required: false
-        default: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json 
+        default: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         type: string
     secrets:
       nuget_api_key:
@@ -41,6 +41,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '8.x'
+      - name: Auth to GitHub NuGet registry
+        run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
       - name: Build
         run: dotnet build --configuration Release
       - name: Test
