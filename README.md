@@ -8,12 +8,15 @@ This is a simple build, test, pack and NuGet push for .NET projects.  "Default" 
 
 ## `push-dotnet-build-test-pack-push-default.yml`
 
-This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for push actions, with packages being pushed to the GitHub NuGet registry:
+This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for push actions, ignoring pushed tags, with packages being pushed to the GitHub NuGet registry:
 
 ``` yaml
 name: Push
 
-on: [push]
+on:
+  push:
+    tags-ignore:
+      - '**'
 
 jobs:
   push:
