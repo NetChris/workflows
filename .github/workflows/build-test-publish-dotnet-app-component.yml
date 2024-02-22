@@ -1,0 +1,78 @@
+name: Build, Test and Publish dotnet App Component
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "The GitHub environment to use"
+        required: true
+        type: string
+      dockerfile_path:
+        description: "The path to the Dockerfile to build the app component, relative to the repo root"
+        required: true
+        type: string
+    outputs:
+      docker_image:
+        description: "The published Docker image"
+        value: ${{ jobs.build_test_publish.outputs.docker_image }}
+
+jobs:
+  build_test_publish:
+    name: Build, test, publish Docker image
+    runs-on: ubuntu-latest
+    environment: ${{inputs.environment}}
+    permissions:
+      actions: read
+      checks: write # Needed for dorny/test-reporter
+      contents: read
+      id-token: write
+      packages: read
+    env:
+      docker_image: "${{ vars.NC_AZURE_CONTAINER_REGISTRY_LOGIN_SERVER }}/${{ vars.NC_APP_AGGREGATE_SHORT }}/${{ vars.NC_APP_COMPONENT_SHORT }}:${{ github.run_id }}-${{ github.run_attempt }}"
+    outputs:
+      docker_image: ${{ env.docker_image }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: parse_semver_action
+        uses: NetChris/parse-semver@fbe0c1f8a20b7b58bd5f4f862c2c9756259efba2
+      -
+        name: Auth to GitHub NuGet registry
+        run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name githubNuGetRegistry "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+      -
+        name: Build
+        run: dotnet build /p:Version=${{steps.parse_semver_action.outputs.dotnet_assembly_version}}
+      - 
+        name: Test
+        run: dotnet test --filter TestType!=Integration --logger "trx;LogFileName=test-results.trx"
+      - 
+        name: Test Report
+        uses: dorny/test-reporter@v1
+        if: always()
+        with:
+          name: .NET tests
+          path: "**/test-results.trx"                            
+          reporter: dotnet-trx
+          fail-on-error: true
+      -
+        name: Docker Build
+        run: |
+          docker build \
+            --build-arg Version="${{steps.parse_semver_action.outputs.dotnet_assembly_version}}" \
+            --build-arg InformationalVersion="SHA - ${{github.sha}}, Run ID ${{github.run_id}}, Run Number ${{github.run_number}}, Run Attempt ${{github.run_attempt}}" \
+            --build-arg NC_NUGET_GITHUB_USERNAME="USERNAME" \
+            --build-arg NC_NUGET_GITHUB_PASSWORD="${{ secrets.GITHUB_TOKEN }}" \
+            -t ${{ env.docker_image }} \
+            -f ${{ inputs.dockerfile_path }} . 
+      - 
+        name: 'Az CLI login'
+        uses: azure/login@v1
+        with:
+          client-id: ${{ secrets.NC_AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.NC_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.NC_AZURE_SUBSCRIPTION_ID_ACR_PUSH }}
+      - 
+        name: Login to ACR via OIDC
+        run: az acr login --name netchris
+      - 
+        name: Docker Push
+        run: docker push ${{ env.docker_image }}
