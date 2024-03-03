@@ -67,7 +67,7 @@ jobs:
     name: Deploy Azure Container App - ${{ vars.NC_APP_COMPONENT_SHORT }} (${{ vars.NC_APP_ENVIRONMENT }})
     environment: 
       name: ${{ inputs.environment }}
-      url: ${{inputs.environment_url}}
+      url: ${{ inputs.environment_url == '' && vars.NC_APP_HOMEPAGE_URL || inputs.environment_url }}
     permissions:
       id-token: write
     steps:
