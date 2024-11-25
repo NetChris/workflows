@@ -30,6 +30,10 @@ jobs:
 
 Note the `permissions` requirement.
 
+### .NET SDK version
+
+To upgrade the .NET SDK version to use for `dotnet` commands, look to the "Setup dotnet" step in `push-dotnet-build-test-pack-push-default.yml` and upgrade accordingly.
+
 ## `pre-release-nuget-org.yml`
 
 This workflow leverages `dotnet-build-test-pack-push-default.yml` and allows a simple configuration for **pre-release** actions, with packages being pushed to NuGet.org:
