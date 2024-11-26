@@ -33,6 +33,10 @@ jobs:
       docker_image: ${{ env.docker_image }}
     steps:
       - uses: actions/checkout@v4
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.x'
       - id: parse_semver_action
         uses: NetChris/parse-semver@fbe0c1f8a20b7b58bd5f4f862c2c9756259efba2
       -

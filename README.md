@@ -32,7 +32,16 @@ Note the `permissions` requirement.
 
 ### .NET SDK version
 
-To upgrade the .NET SDK version to use for `dotnet` commands, look to the "Setup dotnet" step in `push-dotnet-build-test-pack-push-default.yml` and upgrade accordingly.
+To upgrade the .NET SDK version to use for `dotnet` commands, update the following bit in each file where `dotnet` is called:
+
+``` yml
+# ...
+- name: Setup dotnet
+  uses: actions/setup-dotnet@v4
+  with:
+    dotnet-version: '9.x'
+# ...
+```
 
 ## `pre-release-nuget-org.yml`
 
