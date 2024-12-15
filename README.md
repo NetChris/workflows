@@ -23,6 +23,7 @@ on:
 jobs:
   push:
     permissions:
+      checks: write
       contents: read
       packages: write
     uses: NetChris/workflows/.github/workflows/push-dotnet-build-test-pack-push-default.yml@SHA
