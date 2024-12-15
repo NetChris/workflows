@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build, Test, Pack, Push
     permissions:
+      checks: write # Needed for dorny/test-reporter
       contents: read
       packages: write
     env:
