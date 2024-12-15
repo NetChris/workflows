@@ -55,7 +55,7 @@ jobs:
           name: .NET tests
           path: "**/test-results.trx"                            
           reporter: dotnet-trx
-          fail-on-error: false
+          fail-on-empty: false
       - name: Paranoid NuGet package clean
         # For convenience we push *.nupkg later, so make sure the output folder is wiped, a paranoid move in case we re-use a runner?
         run: rm -rf ./nupkgs
