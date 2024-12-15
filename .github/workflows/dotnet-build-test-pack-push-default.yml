@@ -25,6 +25,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build, Test, Pack, Push
     permissions:
+      checks: write # Needed for dorny/test-reporter
       contents: read
       packages: write
     env:
@@ -46,7 +47,15 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
       - name: Test
-        run: dotnet test --configuration Release --no-build
+        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+      - name: Test Report
+        uses: dorny/test-reporter@v1.9.1
+        if: always()
+        with:
+          name: .NET tests
+          path: "**/test-results.trx"                            
+          reporter: dotnet-trx
+          fail-on-error: true
       - name: Paranoid NuGet package clean
         # For convenience we push *.nupkg later, so make sure the output folder is wiped, a paranoid move in case we re-use a runner?
         run: rm -rf ./nupkgs

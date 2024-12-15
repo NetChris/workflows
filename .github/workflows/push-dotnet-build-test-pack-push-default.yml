@@ -17,6 +17,7 @@ jobs:
   dotnet-build-test-pack-push-default:
     needs: parse_semver
     permissions:
+      checks: write
       contents: read
       packages: write
     uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
