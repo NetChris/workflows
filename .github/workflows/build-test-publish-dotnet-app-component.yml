@@ -46,9 +46,7 @@ jobs:
         name: Build
         run: dotnet build --configuration Release /p:Version=${{steps.parse_semver_action.outputs.dotnet_assembly_version}}
       - 
-        env: |
-          ${{ vars }}
-          ${{ secrets }}
+        env: ${{ secrets }}
         name: Test
         run: |
           env | dotnet test --configuration Release --no-build --  --filter-not-trait "TestType=EndToEnd" --report-xunit-trx --report-xunit-trx-filename NetChris-GitHub-Actions-test-results.trx
