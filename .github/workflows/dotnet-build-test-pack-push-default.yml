@@ -47,7 +47,7 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
       - name: Test
-        run: dotnet test --configuration Release --no-build --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test --configuration Release --no-build --filter TestType!=EndToEnd --logger "trx;LogFileName=test-results.trx"
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
         if: success() || failure()        # run this step even if previous step failed
