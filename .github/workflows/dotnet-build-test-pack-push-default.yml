@@ -47,13 +47,13 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release
       - name: Test
-        run: dotnet test --configuration Release --no-build --filter TestType!=EndToEnd --logger "trx;LogFileName=test-results.trx"
+        run: dotnet test --configuration Release --no-build -- --filter-not-trait "TestType=EndToEnd" --report-xunit-trx --report-xunit-trx-filename NetChris-GitHub-Actions-test-results.trx
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
         if: success() || failure()        # run this step even if previous step failed
         with:
           name: .NET tests
-          path: "**/test-results.trx"                            
+          path: "**/NetChris-GitHub-Actions-test-results.trx"
           reporter: dotnet-trx
           fail-on-empty: false
       - name: Paranoid NuGet package clean
