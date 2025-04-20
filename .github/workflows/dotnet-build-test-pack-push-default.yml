@@ -45,7 +45,7 @@ jobs:
       - name: Auth to GitHub NuGet registry
         run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
       - name: Build
-        run: dotnet build --configuration Release
+        run: dotnet build --configuration Release /p:Version=${{ inputs.dotnet_assembly_version }}
       - name: Test
         run: dotnet test --configuration Release --no-build -- --filter-not-trait "TestType=EndToEnd" --report-xunit-trx --report-xunit-trx-filename NetChris-GitHub-Actions-test-results.trx
       - name: Test Report
