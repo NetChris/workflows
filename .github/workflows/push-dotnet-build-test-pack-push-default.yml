@@ -23,7 +23,12 @@ jobs:
     uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
     with:
       # The version here is long but it ensures each push is unique.
-      nuget_version: ${{ needs.parse_semver.outputs.nuget_version }}-${{ github.run_number }}-${{ github.run_attempt }}-${{ github.run_id }}
+      # Additionally, the run ID should be first given lexicographic issues.
+      # We want to be able to reference NuGet packages by wildcard so by having this value first we can assume
+      # that a subsequent run will always be greater than the previous one.
+      # The only corner cases are 1) if GitHub's run ID exceeds the next power of 10 while we're working the same prerelease (highly unlikely)
+      # and 2) if we re-attempt the run more than 9 times (also unlikely).
+      nuget_version: ${{ needs.parse_semver.outputs.nuget_version }}-${{ github.run_id }}-${{ github.run_number }}-${{ github.run_attempt }}
       dotnet_assembly_version: ${{ needs.parse_semver.outputs.dotnet_assembly_version }}
       # We default to pushing to the organizational feed, so no value for nuget_source
     secrets:
