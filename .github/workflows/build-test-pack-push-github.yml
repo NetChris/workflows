@@ -13,6 +13,11 @@ on:
         description: '.NET Assembly Version'
         required: true
         type: string
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-test-pack-push-github:
@@ -26,6 +31,7 @@ jobs:
       project_or_solution: ${{ inputs.project_or_solution }}
       nuget_version: ${{ inputs.nuget_version }}
       dotnet_assembly_version: ${{ inputs.dotnet_assembly_version }}
+      skip_tests: ${{ inputs.skip_tests }}
       # We default to pushing to the organizational feed, so no value for nuget_source
     secrets:
       nuget_api_key: ${{ secrets.GITHUB_TOKEN }}

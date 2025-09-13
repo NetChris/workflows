@@ -16,6 +16,11 @@ on:
         description: '.NET Assembly Version'
         required: true
         type: string
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build_test_pack_push_nugetorg:
@@ -30,5 +35,6 @@ jobs:
       nuget_version: ${{ inputs.nuget_version }}
       dotnet_assembly_version: ${{ inputs.dotnet_assembly_version }}
       nuget_source: ${{ vars.NC_NUGET_ORG_API_SOURCE_URL }}
+      skip_tests: ${{ inputs.skip_tests }}
     secrets:
       nuget_api_key: ${{ secrets.NC_NUGET_ORG_API_KEY }}

@@ -20,6 +20,11 @@ on:
         required: false
         default: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         type: string
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
     secrets:
       nuget_api_key:
         required: true
@@ -52,12 +57,13 @@ jobs:
         run: dotnet build ${{ inputs.project_or_solution }} --configuration Release /p:Version=${{ inputs.dotnet_assembly_version }}
       - 
         env: ${{ secrets }}
+        if: ${{ inputs.skip_tests != true }}
         name: Test
         run: |
           env | dotnet test --configuration Release --no-build --  --filter-not-trait "TestType=EndToEnd" --report-xunit-trx --report-xunit-trx-filename NetChris-GitHub-Actions-test-results.trx
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
-        if: success() || failure()        # run this step even if previous step failed
+        if: ${{ inputs.skip_tests != true }} # Before we used 'success() || failure()' to ensure this would run after a failed test, but I'm assuming that the specific dependency on inputs.skip_tests allows us to avoid that complexity.
         with:
           name: .NET tests
           path: "**/NetChris-GitHub-Actions-test-results.trx"
