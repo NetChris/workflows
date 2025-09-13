@@ -2,6 +2,11 @@ name: Release - NuGet.org
 
 on:
   workflow_call:
+    inputs:
+      project_or_solution:
+        description: 'The project or solution file to build. If not specified, the action will look for a .sln or .csproj file in the root of the repository.'
+        required: false
+        type: string
 
 jobs:
   enforce_semver:
@@ -20,4 +25,5 @@ jobs:
     with:
       nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
+      project_or_solution: ${{ inputs.project_or_solution }}
     secrets: inherit
