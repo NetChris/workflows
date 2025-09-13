@@ -3,6 +3,11 @@ name: Push
 
 on:
   workflow_call:
+    inputs:
+      project_or_solution:
+        description: 'The project or solution file to build. If not specified, the action will look for a .sln or .csproj file in the root of the repository.'
+        required: false
+        type: string
 
 jobs:
   parse_semver:
@@ -30,7 +35,7 @@ jobs:
       # and 2) if we re-attempt the run more than 9 times (also unlikely).
       nuget_version: ${{ needs.parse_semver.outputs.nuget_version }}-${{ github.run_id }}.${{ github.run_attempt }}-${{ github.run_number }}
       dotnet_assembly_version: ${{ needs.parse_semver.outputs.dotnet_assembly_version }}
+      project_or_solution: ${{ inputs.project_or_solution }}
       # We default to pushing to the organizational feed, so no value for nuget_source
     secrets:
       nuget_api_key: ${{ secrets.GITHUB_TOKEN }}
-  
