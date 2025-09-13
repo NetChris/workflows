@@ -3,6 +3,10 @@ name: dotnet build, test, pack, push to NuGet registry (using defaults)
 on:
   workflow_call:
     inputs:
+      project_or_solution:
+        description: 'The project or solution file to build. If not specified, the action will look for a .sln or .csproj file in the root of the repository.'
+        required: false
+        type: string
       nuget_version:
         description: 'NuGet Version for the package'
         required: true
@@ -16,6 +20,11 @@ on:
         required: false
         default: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
         type: string
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
     secrets:
       nuget_api_key:
         required: true
@@ -45,15 +54,16 @@ jobs:
       - name: Auth to GitHub NuGet registry
         run: dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
       - name: Build
-        run: dotnet build --configuration Release /p:Version=${{ inputs.dotnet_assembly_version }}
+        run: dotnet build ${{ inputs.project_or_solution }} --configuration Release /p:Version=${{ inputs.dotnet_assembly_version }}
       - 
         env: ${{ secrets }}
+        if: ${{ inputs.skip_tests != true }}
         name: Test
         run: |
           env | dotnet test --configuration Release --no-build --  --filter-not-trait "TestType=EndToEnd" --report-xunit-trx --report-xunit-trx-filename NetChris-GitHub-Actions-test-results.trx
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
-        if: success() || failure()        # run this step even if previous step failed
+        if: ${{ inputs.skip_tests != true }} # Before we used 'success() || failure()' to ensure this would run after a failed test, but I'm assuming that the specific dependency on inputs.skip_tests allows us to avoid that complexity.
         with:
           name: .NET tests
           path: "**/NetChris-GitHub-Actions-test-results.trx"
@@ -63,6 +73,6 @@ jobs:
         # For convenience we push *.nupkg later, so make sure the output folder is wiped, a paranoid move in case we re-use a runner?
         run: rm -rf ./nupkgs
       - name: Pack
-        run: dotnet pack --configuration Release /p:PackageVersion=${{ inputs.nuget_version }} /p:Version=${{ inputs.dotnet_assembly_version }} --output ./nupkgs
+        run: dotnet pack ${{ inputs.project_or_solution }} --configuration Release /p:PackageVersion=${{ inputs.nuget_version }} /p:Version=${{ inputs.dotnet_assembly_version }} --output ./nupkgs
       - name: Push
         run: dotnet nuget push ./nupkgs/*.nupkg --source ${{ inputs.nuget_source }} --api-key ${{ env.nuget_api_key }}

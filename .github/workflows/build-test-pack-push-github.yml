@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      project_or_solution:
+        description: 'The project or solution file to build. If not specified, the action will look for a .sln or .csproj file in the root of the repository.'
+        required: false
+        type: string
       nuget_version:
         description: 'NuGet Version for the package'
         required: true
@@ -9,6 +13,11 @@ on:
         description: '.NET Assembly Version'
         required: true
         type: string
+      skip_tests:
+        description: 'Skip running tests'
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build-test-pack-push-github:
@@ -19,8 +28,10 @@ jobs:
       packages: write
     uses: ./.github/workflows/dotnet-build-test-pack-push-default.yml
     with:
+      project_or_solution: ${{ inputs.project_or_solution }}
       nuget_version: ${{ inputs.nuget_version }}
       dotnet_assembly_version: ${{ inputs.dotnet_assembly_version }}
+      skip_tests: ${{ inputs.skip_tests }}
       # We default to pushing to the organizational feed, so no value for nuget_source
     secrets:
       nuget_api_key: ${{ secrets.GITHUB_TOKEN }}
