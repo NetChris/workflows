@@ -21,6 +21,9 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      nuget_api_key:
+        required: true
 
 jobs:
   build_test_pack_push_nugetorg:
@@ -37,4 +40,4 @@ jobs:
       nuget_source: ${{ vars.NC_NUGET_ORG_API_SOURCE_URL }}
       skip_tests: ${{ inputs.skip_tests }}
     secrets:
-      nuget_api_key: ${{ secrets.NC_NUGET_ORG_API_KEY }}
+      nuget_api_key: ${{ secrets.nuget_api_key }}

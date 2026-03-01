@@ -12,6 +12,9 @@ on:
         required: false
         type: boolean
         default: false
+    secrets:
+      nuget_api_key:
+        required: true
 
 jobs:
   enforce_semver:

@@ -3,6 +3,9 @@ name: Pre-Release - NuGet.org
 
 on:
   workflow_call:
+    secrets:
+      nuget_api_key:
+        required: true
 
 jobs:
   enforce_semver:
