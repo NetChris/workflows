@@ -24,4 +24,5 @@ jobs:
     with:
       nuget_version: ${{ needs.enforce_semver.outputs.nuget_version }}
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
-    secrets: inherit
+    secrets:
+      nuget_api_key: ${{ secrets.nuget_api_key }}

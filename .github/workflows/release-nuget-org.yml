@@ -35,4 +35,5 @@ jobs:
       dotnet_assembly_version: ${{ needs.enforce_semver.outputs.dotnet_assembly_version }}
       project_or_solution: ${{ inputs.project_or_solution }}
       skip_tests: ${{ inputs.skip_tests }}
-    secrets: inherit
+    secrets:
+      nuget_api_key: ${{ secrets.nuget_api_key }}
