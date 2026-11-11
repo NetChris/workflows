@@ -64,6 +64,7 @@ jobs:
       - name: Test Report
         uses: dorny/test-reporter@v1.9.1
         if: ${{ inputs.skip_tests != true }} # Before we used 'success() || failure()' to ensure this would run after a failed test, but I'm assuming that the specific dependency on inputs.skip_tests allows us to avoid that complexity.
+        continue-on-error: true
         with:
           name: .NET tests
           path: "**/NetChris-GitHub-Actions-test-results.trx"
